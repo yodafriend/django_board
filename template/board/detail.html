@@ -1,0 +1,58 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+<div class ="container mt-5 mb-5">
+
+    <h1><b>{{bo.subject}}</b></h1>
+
+    <div class="text-end">
+        <img src="{{bo.writerpic}}" height="150px" class="rounded-circle">
+    </div>
+    <textarea class="form-control" disabled>{{bo.content}}</textarea>
+    
+    <div class="text-end mt-5">
+        {% if bo.writer == user.username %}
+            <a href="{% url 'board:update' bo.id %}"><button class="btn btn-secondary">수정</button></a>
+            <a href="{% url 'board:delete' bo.id %}"><button class="btn btn-danger">삭제</button></a>
+        {% endif %}
+        {%if user in bo.likey.all %}
+            <a href="{% url 'board:unlikey' bo.id %}"><button class="btn btn-danger">좋아요 취소</button></a>
+
+        {%else%}
+            <a href="{% url 'board:likey' bo.id %}"><button class="btn btn-primary">좋아요</button></a>
+
+        {%endif%}
+        <a href="{%url 'board:index'%}"><button class="btn btn-success">홈</button></a>
+    </div>
+    <hr>
+    <form method="post" action="{% url 'board:create_reply' bo.id %}">
+        {%csrf_token%}
+        <div class="row mt-4">
+            <div class="col-lg-11">
+                <input name="comment" type="text" class="form-control">
+            </div>
+            <div class="col-lg-1">
+                <button class="btn btn-primary">+Reply</button>
+            </div>
+        </div>
+    </form>
+
+    {%for i in re%}
+    <div class="row mt-5">
+        <div class="col-lg-2">
+            <img src="{{i.replyerpic}}" width="100px">
+        </div>
+        <div class="col-lg-8">
+            <textarea disabled class="form-control">{{i.comment}}</textarea>
+        </div>
+        {%if user.username == i.replyer%}
+            <div class="col-lg-1">
+                <a href="{%url 'board:remove_reply' bo.id i.id%}"><button class="btn btn-danger">삭제</button></a>
+            </div>
+        {%endif%}
+        </div>
+    {%endfor%}
+</div>
+
+{% endblock %}
